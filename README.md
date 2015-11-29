@@ -66,7 +66,7 @@ $client->useAuthenticator(new QueryParameterProvider('api_key', 'abcd1234'));
 // or
 $client->useAuthenticator(new HeaderProvider('X-Auth-Header', 'abcd1234'));
 // each request will be followed with header "X-Auth-Header: abcd1234"
-```php
+```
 ### Implementing own authenticator
 `Sc\RestClient\AuthenticationProvider\AuthenticationProviderInterface#addAuthentificationInfo` will play with original request and modify it according with your requirements such as X.509 certificates
 
