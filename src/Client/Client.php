@@ -93,69 +93,13 @@ class Client implements ClientInterface
     }
 
     /**
-     * @param $path
-     * @param $method
-     * @param array $data
-     * @param array $parameters
-     *
-     * @return ResponseInterface
-     *
-     * @throws RequestFailedException
-     */
-    protected function makeRequest($path, $method, array $data = [], array $parameters = [])
-    {
-        $uri = $this->endpoint.$path;
-
-        if ($parameters) {
-            $uri .= '?'.http_build_query($parameters);
-        }
-
-        $http_client = new HttpClient();
-
-        $request = $this->getRequest($method, $uri, $data);
-
-        if ($this->request_signer) {
-            $this->request_signer->signRequest($request);
-        }
-
-        if ($this->auth_provider) {
-            $request = $this->auth_provider->addAuthentificationInfo($request);
-        }
-
-        return $http_client->send($request);
-    }
-
-    /**
-     * @param $method
-     * @param $uri
-     * @param array $data
-     *
-     * @return Request
-     */
-    protected function getRequest($method, $uri, array $data = [])
-    {
-        $headers = [
-            'Content-Type' => 'application/x-www-form-urlencoded',
-        ];
-
-        return new Request($method, $uri, $headers, http_build_query($data, null, '&'));
-    }
-
-    protected static function createNotFoundException($resourse, $identificator, ClientException $prev)
-    {
-        return new ResourseNotFoundException(sprintf('resourse [%s/%s] not found', $resourse, $identificator), 404, $prev);
-    }
-
-    /**
      * @param $resourse
      *
      * @return array
-     *
-     * @throws RequestFailedException
      */
-    public function getAll($resourse)
+    public function getAll($resourse, array $parameters = [])
     {
-        $response = $this->makeRequest($resourse.'/', self::METHOD_GET);
+        $response = $this->makeRequest($resourse.'/', self::METHOD_GET, [], $parameters);
 
         return $this->response_parser->parseResponse($response);
     }
@@ -175,10 +119,90 @@ class Client implements ClientInterface
         }
 
         if ($response->hasHeader('Location')) {
-            return $this->handleLocation($response->getHeader('Location')[0]);
+            return $this->handleLocation($response->getHeaderLine('Location'));
+        }
+    }
+
+    /**
+     * @param $resourse
+     * @param $id
+     * @param array      $data
+     * @param bool|false $partial_update
+     *
+     * @return array
+     *
+     * @throws ResourseNotFoundException
+     */
+    public function update($resourse, $id, array $data, $partial_update = false)
+    {
+        $method = $partial_update ? self::METHOD_PATCH : self::METHOD_PUT;
+
+        try {
+            $response = $this->makeRequest($resourse.'/'.$id, $method, $data);
+        } catch (ClientException $e) {
+            throw self::createNotFoundException($resourse, $id, $e);
         }
 
-        return;
+        if ($response->hasHeader('Location')) {
+            return $this->handleLocation($response->getHeaderLine('Location'));
+        }
+    }
+
+    /**
+     * @param $resourse
+     * @param $id
+     *
+     * @return bool
+     *
+     * @throws ResourseNotFoundException
+     */
+    public function delete($resourse, $id)
+    {
+        try {
+            $response = $this->makeRequest($resourse.'/'.$id, self::METHOD_DELETE);
+        } catch (ClientException $e) {
+            throw self::createNotFoundException($resourse, $id, $e);
+        }
+
+        return ($response->getStatusCode() === 204);
+    }
+
+    /**
+     * @param $path
+     * @param $method
+     * @param array $data
+     * @param array $parameters
+     *
+     * @return ResponseInterface
+     *
+     * @throws RequestFailedException
+     */
+    protected function makeRequest($path, $method, array $data = [], array $parameters = [])
+    {
+        $uri = $this->endpoint.$path;
+
+        if ($parameters) {
+            $uri .= '?'.http_build_query($parameters);
+        }
+
+        $http_client = $this->getHttpClient();
+
+        $request = $this->getRequest($method, $uri, $data);
+
+        if ($this->request_signer) {
+            $this->request_signer->signRequest($request);
+        }
+
+        if ($this->auth_provider) {
+            $request = $this->auth_provider->addAuthentificationInfo($request);
+        }
+
+        return $http_client->send($request);
+    }
+
+    protected static function createNotFoundException($resourse, $identificator, ClientException $prev)
+    {
+        return new ResourseNotFoundException(sprintf('resourse [%s/%s] not found', $resourse, $identificator), 404, $prev);
     }
 
     /**
@@ -199,48 +223,26 @@ class Client implements ClientInterface
     }
 
     /**
-     * @param $resourse
-     * @param $id
-     * @param array      $data
-     * @param bool|false $partial_update
+     * @param $method
+     * @param $uri
+     * @param array $data
      *
-     * @return bool
-     *
-     * @throws ResourseNotFoundException
+     * @return Request
      */
-    public function update($resourse, $id, array $data, $partial_update = false)
+    protected function getRequest($method, $uri, array $data = [])
     {
-        $method = $partial_update ? self::METHOD_PATCH : self::METHOD_PUT;
+        $headers = [
+            'Content-Type' => 'application/x-www-form-urlencoded',
+        ];
 
-        try {
-            $response = $this->makeRequest($resourse.'/'.$id, $method, $data);
-        } catch (ClientException $e) {
-            throw self::createNotFoundException($resourse, $id, $e);
-        }
-
-        if ($response->hasHeader('Location')) {
-            return $this->handleLocation($response->getHeader('Location')[0]);
-        }
-
-        return;
+        return new Request($method, $uri, $headers, http_build_query($data, null, '&'));
     }
 
     /**
-     * @param $resourse
-     * @param $id
-     *
-     * @return bool
-     *
-     * @throws ResourseNotFoundException
+     * @return HttpClient
      */
-    public function delete($resourse, $id)
+    protected function getHttpClient()
     {
-        try {
-            $response = $this->makeRequest($resourse.'/'.$id, self::METHOD_DELETE);
-        } catch (ClientException $e) {
-            throw self::createNotFoundException($resourse, $id, $e);
-        }
-
-        return ($response->getStatusCode() === 204);
+        return new HttpClient();
     }
 }

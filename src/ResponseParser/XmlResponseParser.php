@@ -41,12 +41,15 @@ class XmlResponseParser implements ResponseParserInterface
      */
     public function parseResponse(ResponseInterface $response)
     {
+        libxml_use_internal_errors(true);
         $xml = simplexml_load_string((string) $response->getBody());
 
         if (false === $xml) {
             throw new ParsingFailedException();
         }
 
-        return (array) $xml;
+        $json = json_encode($xml);
+
+        return json_decode($json, true);
     }
 }
