@@ -22,7 +22,7 @@ $created = $client->create($resourse, [
 ]);
 // 'create' API should return data or 'Location' header with created resource URI
 
-$id = $created['id];
+$id = $created['id'];
 
 // retrieve single object (will produce GET /zombies/123/)
 $client->get($resourse, $id);
