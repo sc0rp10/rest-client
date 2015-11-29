@@ -4,7 +4,7 @@ This is simple and extendable REST client.
 
 ## Basic sage
 
-```
+```php
 use Sc\RestClient\Client\Client;
 use Sc\RestClient\ResponseParser\JsonResponseParser;
 
@@ -43,7 +43,7 @@ $client->delete($resourse, $id);
 
 ```
 ## Change response format
-```
+```php
 use Sc\RestClient\Client\Client;
 use Sc\RestClient\ResponseParser\XmlResponseParser;
 
@@ -53,7 +53,7 @@ $client = new Client('https://api.foo.bar', new XmlResponseParser('root_tag_name
 Just implement `Sc\RestClient\ResponseParser\ResponseParserInterface#parseResponse` and play with response
 
 ## Custom api authentification
-```
+```php
 use Sc\RestClient\Client\Client;
 use Sc\RestClient\ResponseParser\JsonResponseParser;
 use Sc\RestClient\AuthenticationProvider\QueryParameterProvider;
@@ -66,7 +66,7 @@ $client->useAuthenticator(new QueryParameterProvider('api_key', 'abcd1234'));
 // or
 $client->useAuthenticator(new HeaderProvider('X-Auth-Header', 'abcd1234'));
 // each request will be followed with header "X-Auth-Header: abcd1234"
-```
+```php
 ### Implementing own authenticator
 `Sc\RestClient\AuthenticationProvider\AuthenticationProviderInterface#addAuthentificationInfo` will play with original request and modify it according with your requirements such as X.509 certificates
 
