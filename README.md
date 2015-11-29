@@ -1,4 +1,5 @@
 # PHP REST client
+[![Build Status](https://travis-ci.org/sc0rp10/rest-client.svg?branch=master)](https://travis-ci.org/sc0rp10/rest-client)
 
 This is simple and extendable REST client.
 
