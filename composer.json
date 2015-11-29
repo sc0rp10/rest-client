@@ -1,0 +1,25 @@
+{
+    "name": "sc0/rest-client",
+    "description": "Simple PHP Rest Client",
+    "keywords": ["rest", "rest-client"],
+    "homepage": "https://github.com/sc0rp10/rest-client",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^6.1",
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Konstantin Zamyakin",
+            "email": "dev@weblab.pro"
+        }
+    ],
+    "minimum-stability": "alpha",
+    "autoload": {
+        "psr-4": {"Sc\\RestClient\\": "src/"}
+    }
+}
