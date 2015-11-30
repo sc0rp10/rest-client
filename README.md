@@ -1,5 +1,6 @@
 # PHP REST client
 [![Build Status](https://travis-ci.org/sc0rp10/rest-client.svg?branch=master)](https://travis-ci.org/sc0rp10/rest-client)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/bbfbf2a6-d8b8-49fe-9c03-5dc3e4eb1f29/big.png)](https://insight.sensiolabs.com/projects/bbfbf2a6-d8b8-49fe-9c03-5dc3e4eb1f29)
 
 This is simple and extendable REST client.
 
