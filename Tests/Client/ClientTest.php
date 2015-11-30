@@ -3,8 +3,6 @@
 require_once __DIR__.'/../BaseTest.php';
 
 use GuzzleHttp\Psr7\Response;
-use Sc\RestClient\AuthenticationProvider\HeaderProvider;
-use Sc\RestClient\AuthenticationProvider\QueryParameterProvider;
 use Sc\RestClient\Client\Exception\ResourseNotFoundException;
 
 class ClientTest extends BaseTest
