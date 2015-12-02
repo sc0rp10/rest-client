@@ -18,7 +18,7 @@
             "email": "dev@weblab.pro"
         }
     ],
-    "minimum-stability": "alpha",
+    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {"Sc\\RestClient\\": "src/"}
     }
