@@ -13,6 +13,7 @@ namespace Sc\RestClient\Client;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\ResponseInterface;
@@ -197,12 +198,16 @@ class Client implements ClientInterface
             $request = $this->auth_provider->addAuthentificationInfo($request);
         }
 
-        return $http_client->send($request);
+        try {
+            return $http_client->send($request);
+        } catch (ServerException $e) {
+            throw new RequestFailedException(sprintf('Request %s %s failed', $method, $path), $e->getCode(), $e);
+        }
     }
 
     protected static function createNotFoundException($resourse, $identificator, ClientException $prev)
     {
-        return new ResourseNotFoundException(sprintf('resourse [%s/%s] not found', $resourse, $identificator), 404, $prev);
+        return new ResourseNotFoundException(sprintf('Resourse [%s/%s] not found', $resourse, $identificator), 404, $prev);
     }
 
     /**
