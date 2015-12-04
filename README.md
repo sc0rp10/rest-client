@@ -13,13 +13,13 @@ use Sc\RestClient\ResponseParser\JsonResponseParser;
 
 $client = new Client('https://api.foo.bar', new JsonResponseParser());
 
-$resourse = 'zombies';
+$resource = 'zombies';
 
 // retrieve all objects (will produce GET /zombies/)
-$client->getAll($resourse);
+$client->getAll($resource);
 
-// create a new resourse (will produce POST /zombies/ with following data)
-$created = $client->create($resourse, [
+// create a new resource (will produce POST /zombies/ with following data)
+$created = $client->create($resource, [
     'name' => 'Shaun',
     'age' => 29,
 ]);
@@ -28,21 +28,21 @@ $created = $client->create($resourse, [
 $id = $created['id'];
 
 // retrieve single object (will produce GET /zombies/123/)
-$client->get($resourse, $id);
+$client->get($resource, $id);
 
-// update full resourse (will produce PUT /zombies/123/)
-$updated = $client->update($resourse, $id, [
+// update full resource (will produce PUT /zombies/123/)
+$updated = $client->update($resource, $id, [
 	'name' => 'Shaun',
 	'age' => 30,
 ]);
 
-// update resourse partially (will produce PATCH /zombies/123/)
-$updated = $client->update($resourse, $id, [
+// update resource partially (will produce PATCH /zombies/123/)
+$updated = $client->update($resource, $id, [
 	'age' => 31,
 ]);
 
-// delete resourse (will produce DELETE /zombies/123/)
-$client->delete($resourse, $id);
+// delete resource (will produce DELETE /zombies/123/)
+$client->delete($resource, $id);
 
 ```
 ## Change response format

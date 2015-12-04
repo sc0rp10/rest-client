@@ -9,7 +9,7 @@ require_once __DIR__.'/Mock/TestHttpClient.php';
 abstract class BaseTest extends \PHPUnit_Framework_TestCase
 {
     const ENDPOINT = 'http://api.foo.bar/';
-    const RESOURSE = 'zombies';
+    const RESOURCE = 'zombies';
     const STUB = [
         'name' => 'Shaun',
         'age' => 31,
