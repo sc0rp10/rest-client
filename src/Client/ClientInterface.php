@@ -20,13 +20,13 @@ interface ClientInterface
 
     public function useAuthenticator(AuthenticationProviderInterface $auth_provider);
 
-    public function get($resourse, $id);
+    public function get($resource, $id);
 
-    public function getAll($resourse);
+    public function getAll($resource);
 
-    public function create($resourse, array $data);
+    public function create($resource, array $data);
 
-    public function update($resourse, $id, array $data, $partial_update = false);
+    public function update($resource, $id, array $data, $partial_update = false);
 
-    public function delete($resourse, $id);
+    public function delete($resource, $id);
 }

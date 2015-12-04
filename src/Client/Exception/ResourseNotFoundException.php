@@ -11,6 +11,6 @@
 
 namespace Sc\RestClient\Client\Exception;
 
-class ResourseNotFoundException extends \Exception
+class ResourceNotFoundException extends \Exception
 {
 }

@@ -19,7 +19,7 @@ use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\ResponseInterface;
 use Sc\RestClient\AuthenticationProvider\AuthenticationProviderInterface;
 use Sc\RestClient\Client\Exception\RequestFailedException;
-use Sc\RestClient\Client\Exception\ResourseNotFoundException;
+use Sc\RestClient\Client\Exception\ResourceNotFoundException;
 use Sc\RestClient\RequestSigner\RequestSignerInterface;
 use Sc\RestClient\ResponseParser\ResponseParserInterface;
 
@@ -75,45 +75,45 @@ class Client implements ClientInterface
     }
 
     /**
-     * @param $resourse
+     * @param $resource
      * @param $id
      *
      * @return array
      *
-     * @throws ResourseNotFoundException
+     * @throws ResourceNotFoundException
      */
-    public function get($resourse, $id)
+    public function get($resource, $id)
     {
         try {
-            $response = $this->makeRequest($resourse.'/'.$id, self::METHOD_GET);
+            $response = $this->makeRequest($resource.'/'.$id, self::METHOD_GET);
         } catch (ClientException $e) {
-            throw self::createNotFoundException($resourse, $id, $e);
+            throw self::createNotFoundException($resource, $id, $e);
         }
 
         return $this->response_parser->parseResponse($response);
     }
 
     /**
-     * @param $resourse
+     * @param $resource
      *
      * @return array
      */
-    public function getAll($resourse, array $parameters = [])
+    public function getAll($resource, array $parameters = [])
     {
-        $response = $this->makeRequest($resourse.'/', self::METHOD_GET, [], $parameters);
+        $response = $this->makeRequest($resource.'/', self::METHOD_GET, [], $parameters);
 
         return $this->response_parser->parseResponse($response);
     }
 
     /**
-     * @param $resourse
+     * @param $resource
      * @param array $data
      *
      * @return bool
      */
-    public function create($resourse, array $data)
+    public function create($resource, array $data)
     {
-        $response = $this->makeRequest($resourse.'/', self::METHOD_POST, $data);
+        $response = $this->makeRequest($resource.'/', self::METHOD_POST, $data);
 
         if ((string) $response->getBody() > 0) {
             return $this->response_parser->parseResponse($response);
@@ -125,23 +125,23 @@ class Client implements ClientInterface
     }
 
     /**
-     * @param $resourse
+     * @param $resource
      * @param $id
      * @param array      $data
      * @param bool|false $partial_update
      *
      * @return array
      *
-     * @throws ResourseNotFoundException
+     * @throws ResourceNotFoundException
      */
-    public function update($resourse, $id, array $data, $partial_update = false)
+    public function update($resource, $id, array $data, $partial_update = false)
     {
         $method = $partial_update ? self::METHOD_PATCH : self::METHOD_PUT;
 
         try {
-            $response = $this->makeRequest($resourse.'/'.$id, $method, $data);
+            $response = $this->makeRequest($resource.'/'.$id, $method, $data);
         } catch (ClientException $e) {
-            throw self::createNotFoundException($resourse, $id, $e);
+            throw self::createNotFoundException($resource, $id, $e);
         }
 
         if ($response->hasHeader('Location')) {
@@ -150,19 +150,19 @@ class Client implements ClientInterface
     }
 
     /**
-     * @param $resourse
+     * @param $resource
      * @param $id
      *
      * @return bool
      *
-     * @throws ResourseNotFoundException
+     * @throws ResourceNotFoundException
      */
-    public function delete($resourse, $id)
+    public function delete($resource, $id)
     {
         try {
-            $response = $this->makeRequest($resourse.'/'.$id, self::METHOD_DELETE);
+            $response = $this->makeRequest($resource.'/'.$id, self::METHOD_DELETE);
         } catch (ClientException $e) {
-            throw self::createNotFoundException($resourse, $id, $e);
+            throw self::createNotFoundException($resource, $id, $e);
         }
 
         return ($response->getStatusCode() === 204);
@@ -205,13 +205,13 @@ class Client implements ClientInterface
         }
     }
 
-    protected static function createNotFoundException($resourse, $identificator, ClientException $prev)
+    protected static function createNotFoundException($resource, $identificator, ClientException $prev)
     {
-        return new ResourseNotFoundException(sprintf('Resourse [%s/%s] not found', $resourse, $identificator), 404, $prev);
+        return new ResourceNotFoundException(sprintf('Resource [%s/%s] not found', $resource, $identificator), 404, $prev);
     }
 
     /**
-     * Handle 'Location' header with URI of created/updated resourse.
+     * Handle 'Location' header with URI of created/updated resource.
      *
      * @param $location
      *
