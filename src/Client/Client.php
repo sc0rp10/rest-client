@@ -191,7 +191,7 @@ class Client implements ClientInterface
         $request = $this->getRequest($method, $uri, $data);
 
         if ($this->request_signer) {
-            $this->request_signer->signRequest($request);
+            $request = $this->request_signer->signRequest($request);
         }
 
         if ($this->auth_provider) {
