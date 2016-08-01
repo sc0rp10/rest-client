@@ -5,7 +5,7 @@
     "homepage": "https://github.com/sc0rp10/rest-client",
     "type": "library",
     "require": {
-        "guzzlehttp/guzzle": "^6.1",
+        "guzzlehttp/guzzle": "~6.1",
         "php": ">=5.6"
     },
     "require-dev": {
