@@ -115,7 +115,7 @@ class Client implements ClientInterface
     {
         $response = $this->makeRequest($resource.'/', self::METHOD_POST, $data);
 
-        if ((string) $response->getBody() > 0) {
+        if (trim((string) $response->getBody())) {
             return $this->response_parser->parseResponse($response);
         }
 
