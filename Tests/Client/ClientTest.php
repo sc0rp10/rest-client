@@ -28,7 +28,7 @@ class ClientTest extends BaseTest
 
         $req = $this->http_client->getLastRequest();
 
-        $this->assertEquals(self::ENDPOINT.self::RESOURCE.'/', (string)$req->getUri());
+        $this->assertEquals(self::RESOURCE.'/', (string)$req->getUri());
         $this->assertEquals($data, $result);
         $this->assertEquals('GET', $req->getMethod());
     }
@@ -45,7 +45,7 @@ class ClientTest extends BaseTest
 
         $req = $this->http_client->getLastRequest();
 
-        $this->assertEquals(self::ENDPOINT.self::RESOURCE.'/1234', (string)$req->getUri());
+        $this->assertEquals(self::RESOURCE.'/1234', (string)$req->getUri());
         $this->assertEquals($data, $result);
         $this->assertEquals('GET', $req->getMethod());
     }
@@ -69,10 +69,10 @@ class ClientTest extends BaseTest
         $original = $this->http_client->getLastRequest();
         $redirected = $this->http_client->getLastRequest();
 
-        $this->assertEquals(self::ENDPOINT.self::RESOURCE.'/1234', (string)$redirected->getUri());
+        $this->assertEquals('/'.self::RESOURCE.'/1234', (string)$redirected->getUri());
         $this->assertEquals('GET', $redirected->getMethod());
 
-        $this->assertEquals(self::ENDPOINT.self::RESOURCE.'/', (string)$original->getUri());
+        $this->assertEquals(self::RESOURCE.'/', (string)$original->getUri());
         $this->assertEquals($data, $result);
         $this->assertEquals('POST', $original->getMethod());
     }
@@ -96,10 +96,10 @@ class ClientTest extends BaseTest
         $original = $this->http_client->getLastRequest();
         $redirected = $this->http_client->getLastRequest();
 
-        $this->assertEquals(self::ENDPOINT.self::RESOURCE.'/1234', (string)$redirected->getUri());
+        $this->assertEquals('/'.self::RESOURCE.'/1234', (string)$redirected->getUri());
         $this->assertEquals('GET', $redirected->getMethod());
 
-        $this->assertEquals(self::ENDPOINT.self::RESOURCE.'/1234', (string)$original->getUri());
+        $this->assertEquals(self::RESOURCE.'/1234', (string)$original->getUri());
         $this->assertEquals($data, $result);
         $this->assertEquals('PUT', $original->getMethod());
     }
@@ -125,11 +125,11 @@ class ClientTest extends BaseTest
         $original = $this->http_client->getLastRequest();
         $redirected = $this->http_client->getLastRequest();
 
-        $this->assertEquals(self::ENDPOINT.self::RESOURCE.'/1234', (string)$redirected->getUri());
+        $this->assertEquals('/'.self::RESOURCE.'/1234', (string)$redirected->getUri());
         $this->assertEquals('GET', $redirected->getMethod());
 
 
-        $this->assertEquals(self::ENDPOINT.self::RESOURCE.'/1234', (string)$original->getUri());
+        $this->assertEquals(self::RESOURCE.'/1234', (string)$original->getUri());
         $this->assertEquals($data, $result);
         $this->assertEquals('PATCH', $original->getMethod());
     }
@@ -144,7 +144,7 @@ class ClientTest extends BaseTest
 
         $req = $this->http_client->getLastRequest();
 
-        $this->assertEquals(self::ENDPOINT.self::RESOURCE.'/1234', (string)$req->getUri());
+        $this->assertEquals(self::RESOURCE.'/1234', (string)$req->getUri());
         $this->assertEquals('DELETE', $req->getMethod());
     }
 

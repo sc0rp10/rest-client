@@ -180,15 +180,13 @@ class Client implements ClientInterface
      */
     protected function makeRequest($path, $method, array $data = [], array $parameters = [])
     {
-        $uri = $this->endpoint.$path;
-
         if ($parameters) {
-            $uri .= '?'.http_build_query($parameters);
+            $path .= '?'.http_build_query($parameters);
         }
 
         $http_client = $this->getHttpClient();
 
-        $request = $this->getRequest($method, $uri, $data);
+        $request = $this->getRequest($method, $path, $data);
 
         if ($this->request_signer) {
             $request = $this->request_signer->signRequest($request);
@@ -220,7 +218,7 @@ class Client implements ClientInterface
     protected function handleLocation($location)
     {
         $uri = new Uri($location);
-        $path = trim($uri->getPath(), '/');
+        $path = $uri->getPath();
 
         $response = $this->makeRequest($path, self::METHOD_GET);
 
@@ -248,6 +246,8 @@ class Client implements ClientInterface
      */
     protected function getHttpClient()
     {
-        return new HttpClient();
+        return new HttpClient([
+            'base_uri' => $this->endpoint,
+        ]);
     }
 }
