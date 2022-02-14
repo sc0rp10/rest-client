@@ -11,6 +11,8 @@
 
 namespace Sc\RestClient\ResponseParser\Exception;
 
-class ParsingFailedException extends \Exception
+use Exception;
+
+class ParsingFailedException extends Exception
 {
 }

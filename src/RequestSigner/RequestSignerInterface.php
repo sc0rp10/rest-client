@@ -15,5 +15,5 @@ use Psr\Http\Message\RequestInterface;
 
 interface RequestSignerInterface
 {
-    public function signRequest(RequestInterface $request);
+    public function signRequest(RequestInterface $request): RequestInterface;
 }

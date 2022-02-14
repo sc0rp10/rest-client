@@ -11,6 +11,8 @@
 
 namespace Sc\RestClient\Client\Exception;
 
-class RequestFailedException extends \Exception
+use Exception;
+
+class RequestFailedException extends Exception
 {
 }

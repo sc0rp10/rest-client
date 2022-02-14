@@ -5,7 +5,7 @@
 
 This is simple and extendable REST client.
 
-## Basic sage
+## Basic usage
 
 ```php
 use Sc\RestClient\Client\Client;

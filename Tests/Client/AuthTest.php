@@ -1,14 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once __DIR__.'/../BaseTest.php';
+namespace Sc\Tests\Client;
 
 use GuzzleHttp\Psr7\Response;
 use Sc\RestClient\AuthenticationProvider\HeaderProvider;
 use Sc\RestClient\AuthenticationProvider\QueryParameterProvider;
+use Sc\Tests\BaseTest;
 
 class AuthTest extends BaseTest
 {
-    public function testQueryAuthenticatorWithGet()
+    public function testQueryAuthenticatorWithGet(): void
     {
         $this->rest_client->useAuthenticator(new QueryParameterProvider('api_key', 'foo-bar'));
 
@@ -19,7 +20,7 @@ class AuthTest extends BaseTest
         $this->assertStringEndsWith('api_key=foo-bar', $req->getUri()->getQuery());
     }
 
-    public function testQueryAuthenticatorWithGetAll()
+    public function testQueryAuthenticatorWithGetAll(): void
     {
         $this->rest_client->useAuthenticator(new QueryParameterProvider('api_key', 'foo-bar'));
 
@@ -39,7 +40,7 @@ class AuthTest extends BaseTest
         $this->assertGreaterThan(-1, strpos($req->getUri()->getQuery(), 'bar=baz'));
     }
 
-    public function testQueryAuthenticatorWithGetAllAndAnotherQueryParameters()
+    public function testQueryAuthenticatorWithGetAllAndAnotherQueryParameters(): void
     {
         $this->rest_client->useAuthenticator(new QueryParameterProvider('api_key', 'foo-bar'));
 
@@ -52,7 +53,7 @@ class AuthTest extends BaseTest
         $this->assertGreaterThan(-1, strpos($req->getUri()->getQuery(), 'bar=baz'));
     }
 
-    public function testQueryAuthenticatorWithPost()
+    public function testQueryAuthenticatorWithPost(): void
     {
         $this->rest_client->useAuthenticator(new QueryParameterProvider('api_key', 'foo-bar'));
 
@@ -63,7 +64,7 @@ class AuthTest extends BaseTest
         $this->assertStringEndsWith('api_key=foo-bar', $req->getUri()->getQuery());
     }
 
-    public function testQueryAuthenticatorWithPut()
+    public function testQueryAuthenticatorWithPut(): void
     {
         $this->rest_client->useAuthenticator(new QueryParameterProvider('api_key', 'foo-bar'));
 
@@ -74,20 +75,20 @@ class AuthTest extends BaseTest
         $this->assertStringEndsWith('api_key=foo-bar', $req->getUri()->getQuery());
     }
 
-    public function testQueryAuthenticatorWithPatch()
+    public function testQueryAuthenticatorWithPatch(): void
     {
         $this->rest_client->useAuthenticator(new QueryParameterProvider('api_key', 'foo-bar'));
 
         $response = new Response(200, [], json_encode(self::STUB));
         $this->http_client->addResponse($response);
-        $this->rest_client->update(self::RESOURCE, 1234, self::STUB, [
+        $this->rest_client->update(self::RESOURCE, 1234, [
             'age' => 32,
         ]);
         $req = $this->http_client->getLastRequest();
         $this->assertStringEndsWith('api_key=foo-bar', $req->getUri()->getQuery());
     }
 
-    public function testQueryAuthenticatorWithDelete()
+    public function testQueryAuthenticatorWithDelete(): void
     {
         $this->rest_client->useAuthenticator(new QueryParameterProvider('api_key', 'foo-bar'));
 
@@ -98,7 +99,7 @@ class AuthTest extends BaseTest
         $this->assertStringEndsWith('api_key=foo-bar', $req->getUri()->getQuery());
     }
 
-    public function testHeaderAuthenticatorWithGet()
+    public function testHeaderAuthenticatorWithGet(): void
     {
         $this->rest_client->useAuthenticator(new HeaderProvider('X-Api-Key', 'foo-bar'));
 
@@ -110,7 +111,7 @@ class AuthTest extends BaseTest
         $this->assertEquals('foo-bar', $req->getHeaderLine('X-Api-Key'));
     }
 
-    public function testHeaderAuthenticatorWithGetAll()
+    public function testHeaderAuthenticatorWithGetAll(): void
     {
         $this->rest_client->useAuthenticator(new HeaderProvider('X-Api-Key', 'foo-bar'));
 
@@ -123,7 +124,7 @@ class AuthTest extends BaseTest
         $this->assertEquals('foo-bar', $req->getHeaderLine('X-Api-Key'));
     }
 
-    public function testHeaderAuthenticatorWithPost()
+    public function testHeaderAuthenticatorWithPost(): void
     {
         $this->rest_client->useAuthenticator(new HeaderProvider('X-Api-Key', 'foo-bar'));
 
@@ -135,7 +136,7 @@ class AuthTest extends BaseTest
         $this->assertEquals('foo-bar', $req->getHeaderLine('X-Api-Key'));
     }
 
-    public function testHeaderAuthenticatorWithPut()
+    public function testHeaderAuthenticatorWithPut(): void
     {
         $this->rest_client->useAuthenticator(new HeaderProvider('X-Api-Key', 'foo-bar'));
 
@@ -147,13 +148,13 @@ class AuthTest extends BaseTest
         $this->assertEquals('foo-bar', $req->getHeaderLine('X-Api-Key'));
     }
 
-    public function testHeaderAuthenticatorWithPatch()
+    public function testHeaderAuthenticatorWithPatch(): void
     {
         $this->rest_client->useAuthenticator(new HeaderProvider('X-Api-Key', 'foo-bar'));
 
         $response = new Response(200, [], json_encode(self::STUB));
         $this->http_client->addResponse($response);
-        $this->rest_client->update(self::RESOURCE, 1234, self::STUB, [
+        $this->rest_client->update(self::RESOURCE, 1234, [
             'age' => 32,
         ]);
         $req = $this->http_client->getLastRequest();
@@ -161,7 +162,7 @@ class AuthTest extends BaseTest
         $this->assertEquals('foo-bar', $req->getHeaderLine('X-Api-Key'));
     }
 
-    public function testHeaderAuthenticatorWithDelete()
+    public function testHeaderAuthenticatorWithDelete(): void
     {
         $this->rest_client->useAuthenticator(new HeaderProvider('X-Api-Key', 'foo-bar'));
 

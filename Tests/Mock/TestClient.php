@@ -1,20 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Sc\RestClient\Tests\Mock;
+namespace Sc\Tests\Mock;
 
 use GuzzleHttp\Client as HttpClient;
 use Sc\RestClient\Client\Client;
 
 class TestClient extends Client
 {
-    protected $http_client;
+    protected HttpClient $http_client;
 
     public function setHttpClient(HttpClient $client)
     {
         $this->http_client = $client;
     }
 
-    public function getHttpClient()
+    public function getHttpClient(): HttpClient
     {
         return $this->http_client;
     }

@@ -1,13 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once __DIR__.'/../BaseTest.php';
+namespace Sc\Tests\Client;
 
 use GuzzleHttp\Psr7\Response;
 use Sc\RestClient\Client\Exception\ResourceNotFoundException;
+use Sc\Tests\BaseTest;
 
 class ClientTest extends BaseTest
 {
-    public function testGetAll()
+    public function testGetAll(): void
     {
         $data = [
             [
@@ -33,7 +34,7 @@ class ClientTest extends BaseTest
         $this->assertEquals('GET', $req->getMethod());
     }
 
-    public function testGet()
+    public function testGet(): void
     {
         $data = self::STUB;
 
@@ -50,7 +51,7 @@ class ClientTest extends BaseTest
         $this->assertEquals('GET', $req->getMethod());
     }
 
-    public function testPost()
+    public function testPost(): void
     {
         $data = self::STUB;
 
@@ -77,7 +78,7 @@ class ClientTest extends BaseTest
         $this->assertEquals('POST', $original->getMethod());
     }
 
-    public function testPut()
+    public function testPut(): void
     {
         $data = self::STUB;
 
@@ -104,7 +105,7 @@ class ClientTest extends BaseTest
         $this->assertEquals('PUT', $original->getMethod());
     }
 
-    public function testPatch()
+    public function testPatch(): void
     {
         $data = [
             'age' => 32,
@@ -134,7 +135,7 @@ class ClientTest extends BaseTest
         $this->assertEquals('PATCH', $original->getMethod());
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
         $response = new Response(204);
 
@@ -148,7 +149,7 @@ class ClientTest extends BaseTest
         $this->assertEquals('DELETE', $req->getMethod());
     }
 
-    public function testExceptionOnInvalidResponse()
+    public function testExceptionOnInvalidResponse(): void
     {
         $data = self::STUB;
 
@@ -159,6 +160,8 @@ class ClientTest extends BaseTest
         try {
             $this->rest_client->get(self::RESOURCE, 1234);
             $this->fail();
-        } catch (ResourceNotFoundException $e) {}
+        } catch (ResourceNotFoundException) {
+            $this->assertTrue(true);
+        }
     }
 }

@@ -23,66 +23,39 @@ use Sc\RestClient\Client\Exception\ResourceNotFoundException;
 use Sc\RestClient\RequestSigner\RequestSignerInterface;
 use Sc\RestClient\ResponseParser\ResponseParserInterface;
 
-/**
- * Class Client.
- */
 class Client implements ClientInterface
 {
-    const METHOD_GET = 'GET';
-    const METHOD_POST = 'POST';
-    const METHOD_PUT = 'PUT';
-    const METHOD_PATCH = 'PATCH';
-    const METHOD_DELETE = 'DELETE';
+    public const METHOD_GET = 'GET';
+    public const METHOD_POST = 'POST';
+    public const METHOD_PUT = 'PUT';
+    public const METHOD_PATCH = 'PATCH';
+    public const METHOD_DELETE = 'DELETE';
 
-    /**
-     * @var string
-     */
-    protected $endpoint;
+    protected ?RequestSignerInterface $request_signer = null;
+    protected ?AuthenticationProviderInterface $auth_provider = null;
 
-    /** @var RequestSignerInterface */
-    protected $request_signer;
-
-    /** @var AuthenticationProviderInterface */
-    protected $auth_provider;
-
-    /** @var ResponseParserInterface */
-    protected $response_parser;
-
-    /**
-     * @param $endpoint
-     * @param ResponseParserInterface $responseParser
-     */
-    public function __construct($endpoint, ResponseParserInterface $responseParser)
-    {
+    public function __construct(
+        protected string $endpoint,
+        protected ResponseParserInterface $responseParser
+    ) {
         $this->endpoint = rtrim($endpoint, '/').'/';
-        $this->response_parser = $responseParser;
     }
 
-    /**
-     * @param RequestSignerInterface $signer
-     */
-    public function useRequestSigner(RequestSignerInterface $signer)
+    public function useRequestSigner(RequestSignerInterface $signer): self
     {
         $this->request_signer = $signer;
+
+        return $this;
     }
 
-    /**
-     * @param AuthenticationProviderInterface $auth_provider
-     */
-    public function useAuthenticator(AuthenticationProviderInterface $auth_provider)
+    public function useAuthenticator(AuthenticationProviderInterface $auth_provider): self
     {
         $this->auth_provider = $auth_provider;
+
+        return $this;
     }
 
-    /**
-     * @param $resource
-     * @param $id
-     *
-     * @return array
-     *
-     * @throws ResourceNotFoundException
-     */
-    public function get($resource, $id)
+    public function get(string $resource, string|int $id): array
     {
         try {
             $response = $this->makeRequest($resource.'/'.$id, self::METHOD_GET);
@@ -90,51 +63,32 @@ class Client implements ClientInterface
             throw self::createNotFoundException($resource, $id, $e);
         }
 
-        return $this->response_parser->parseResponse($response);
+        return $this->responseParser->parseResponse($response);
     }
 
-    /**
-     * @param $resource
-     *
-     * @return array
-     */
-    public function getAll($resource, array $parameters = [])
+    public function getAll(string $resource, array $parameters = []): array
     {
         $response = $this->makeRequest($resource.'/', self::METHOD_GET, [], $parameters);
 
-        return $this->response_parser->parseResponse($response);
+        return $this->responseParser->parseResponse($response);
     }
 
-    /**
-     * @param $resource
-     * @param array $data
-     *
-     * @return bool
-     */
-    public function create($resource, array $data)
+    public function create(string $resource, array $data): ?array
     {
         $response = $this->makeRequest($resource.'/', self::METHOD_POST, $data);
 
-        if (trim((string) $response->getBody())) {
-            return $this->response_parser->parseResponse($response);
+        if ($response->getBody()->getSize() > 0) {
+            return $this->responseParser->parseResponse($response);
         }
 
         if ($response->hasHeader('Location')) {
             return $this->handleLocation($response->getHeaderLine('Location'));
         }
+
+        return null;
     }
 
-    /**
-     * @param $resource
-     * @param $id
-     * @param array      $data
-     * @param bool|false $partial_update
-     *
-     * @return array
-     *
-     * @throws ResourceNotFoundException
-     */
-    public function update($resource, $id, array $data, $partial_update = false)
+    public function update(string $resource, string|int $id, array $data, bool $partial_update = false): ?array
     {
         $method = $partial_update ? self::METHOD_PATCH : self::METHOD_PUT;
 
@@ -147,17 +101,11 @@ class Client implements ClientInterface
         if ($response->hasHeader('Location')) {
             return $this->handleLocation($response->getHeaderLine('Location'));
         }
+
+        return null;
     }
 
-    /**
-     * @param $resource
-     * @param $id
-     *
-     * @return bool
-     *
-     * @throws ResourceNotFoundException
-     */
-    public function delete($resource, $id)
+    public function delete(string $resource, string|int $id): bool
     {
         try {
             $response = $this->makeRequest($resource.'/'.$id, self::METHOD_DELETE);
@@ -168,17 +116,38 @@ class Client implements ClientInterface
         return ($response->getStatusCode() === 204);
     }
 
-    /**
-     * @param $path
-     * @param $method
-     * @param array $data
-     * @param array $parameters
-     *
-     * @return ResponseInterface
-     *
-     * @throws RequestFailedException
-     */
-    protected function makeRequest($path, $method, array $data = [], array $parameters = [])
+    protected function handleLocation(string $location): array
+    {
+        $uri = new Uri($location);
+        $path = $uri->getPath();
+
+        $response = $this->makeRequest($path, self::METHOD_GET);
+
+        return $this->responseParser->parseResponse($response);
+    }
+
+    protected function getHttpClient(): HttpClient
+    {
+        return new HttpClient([
+            'base_uri' => $this->endpoint,
+        ]);
+    }
+
+    protected function getRequest(string $method, string $uri, array $data = []): Request
+    {
+        $headers = [
+            'Content-Type' => 'application/x-www-form-urlencoded',
+        ];
+
+        return new Request($method, $uri, $headers, http_build_query($data));
+    }
+
+    protected static function createNotFoundException(string $resource, string $identificator, ClientException $prev): ResourceNotFoundException
+    {
+        return new ResourceNotFoundException(sprintf('Resource [%s/%s] not found', $resource, $identificator), 404, $prev);
+    }
+
+    protected function makeRequest(string $path, string $method, array $data = [], array $parameters = []): ResponseInterface
     {
         if ($parameters) {
             $path .= '?'.http_build_query($parameters);
@@ -201,53 +170,5 @@ class Client implements ClientInterface
         } catch (ServerException $e) {
             throw new RequestFailedException(sprintf('Request %s %s failed', $method, $path), $e->getCode(), $e);
         }
-    }
-
-    protected static function createNotFoundException($resource, $identificator, ClientException $prev)
-    {
-        return new ResourceNotFoundException(sprintf('Resource [%s/%s] not found', $resource, $identificator), 404, $prev);
-    }
-
-    /**
-     * Handle 'Location' header with URI of created/updated resource.
-     *
-     * @param $location
-     *
-     * @return array
-     */
-    protected function handleLocation($location)
-    {
-        $uri = new Uri($location);
-        $path = $uri->getPath();
-
-        $response = $this->makeRequest($path, self::METHOD_GET);
-
-        return $this->response_parser->parseResponse($response);
-    }
-
-    /**
-     * @param $method
-     * @param $uri
-     * @param array $data
-     *
-     * @return Request
-     */
-    protected function getRequest($method, $uri, array $data = [])
-    {
-        $headers = [
-            'Content-Type' => 'application/x-www-form-urlencoded',
-        ];
-
-        return new Request($method, $uri, $headers, http_build_query($data, null, '&'));
-    }
-
-    /**
-     * @return HttpClient
-     */
-    protected function getHttpClient()
-    {
-        return new HttpClient([
-            'base_uri' => $this->endpoint,
-        ]);
     }
 }

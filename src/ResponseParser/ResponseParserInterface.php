@@ -12,16 +12,8 @@
 namespace Sc\RestClient\ResponseParser;
 
 use Psr\Http\Message\ResponseInterface;
-use Sc\RestClient\ResponseParser\Exception\ParsingFailedException;
 
 interface ResponseParserInterface
 {
-    /**
-     * @param ResponseInterface $response
-     *
-     * @return array parsed data
-     *
-     * @throws ParsingFailedException
-     */
-    public function parseResponse(ResponseInterface $response);
+    public function parseResponse(ResponseInterface $response): array;
 }

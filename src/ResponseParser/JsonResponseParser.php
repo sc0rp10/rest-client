@@ -16,14 +16,12 @@ use Sc\RestClient\ResponseParser\Exception\ParsingFailedException;
 
 class JsonResponseParser implements ResponseParserInterface
 {
-    public function parseResponse(ResponseInterface $response)
+    public function parseResponse(ResponseInterface $response): array
     {
-        $result = json_decode((string) $response->getBody(), true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new ParsingFailedException();
+        try {
+            return \json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new ParsingFailedException(previous: $e);
         }
-
-        return $result;
     }
 }

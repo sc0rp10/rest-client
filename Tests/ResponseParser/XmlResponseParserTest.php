@@ -1,15 +1,17 @@
-<?php
+<?php declare(strict_types=1);
+
+namespace Sc\Tests\ResponseParser;
 
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\TestCase;
 use Sc\RestClient\ResponseParser\Exception\ParsingFailedException;
 use Sc\RestClient\ResponseParser\XmlResponseParser;
 
-class XmlResponseParserTest extends \PHPUnit_Framework_TestCase
+class XmlResponseParserTest extends TestCase
 {
-    /** @var XmlResponseParser */
-    protected $parser;
+    protected XmlResponseParser $parser;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->parser = new XmlResponseParser('root');
     }
@@ -30,10 +32,6 @@ class XmlResponseParserTest extends \PHPUnit_Framework_TestCase
     }
     public function testParseInvalidResponse()
     {
-        $data = ['d' => [
-            'foo' => 'bar',
-        ]];
-
         $xml = '<root><d><foo>bar</foo></d></root>';
 
         $response = new Response(200, [], $xml.'bzbzzz');
@@ -41,6 +39,8 @@ class XmlResponseParserTest extends \PHPUnit_Framework_TestCase
         try {
             $this->parser->parseResponse($response);
             $this->fail();
-        } catch (ParsingFailedException $e) {}
+        } catch (ParsingFailedException) {
+            $this->assertTrue(true);
+        }
     }
 }

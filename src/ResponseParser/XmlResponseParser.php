@@ -14,35 +14,12 @@ namespace Sc\RestClient\ResponseParser;
 use Psr\Http\Message\ResponseInterface;
 use Sc\RestClient\ResponseParser\Exception\ParsingFailedException;
 
-/**
- * Class XmlResponseParser.
- */
 class XmlResponseParser implements ResponseParserInterface
 {
-    /**
-     * @var string xml root tag
-     */
-    protected $root_tag;
-
-    /**
-     * @param string $root_tag
-     */
-    public function __construct($root_tag)
-    {
-        $this->root_tag = $root_tag;
-    }
-
-    /**
-     * @param ResponseInterface $response
-     *
-     * @return array
-     *
-     * @throws ParsingFailedException
-     */
-    public function parseResponse(ResponseInterface $response)
+    public function parseResponse(ResponseInterface $response): array
     {
         libxml_use_internal_errors(true);
-        $xml = simplexml_load_string((string) $response->getBody());
+        $xml = simplexml_load_string((string)$response->getBody());
 
         if (false === $xml) {
             throw new ParsingFailedException();

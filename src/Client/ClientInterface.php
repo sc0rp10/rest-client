@@ -16,17 +16,17 @@ use Sc\RestClient\RequestSigner\RequestSignerInterface;
 
 interface ClientInterface
 {
-    public function useRequestSigner(RequestSignerInterface $signer);
+    public function useRequestSigner(RequestSignerInterface $signer): self;
 
-    public function useAuthenticator(AuthenticationProviderInterface $auth_provider);
+    public function useAuthenticator(AuthenticationProviderInterface $auth_provider): self;
 
-    public function get($resource, $id);
+    public function get(string $resource, string|int $id): array;
 
-    public function getAll($resource);
+    public function getAll(string $resource): array;
 
-    public function create($resource, array $data);
+    public function create(string $resource, array $data): ?array;
 
-    public function update($resource, $id, array $data, $partial_update = false);
+    public function update(string $resource, string|int $id, array $data, bool $partial_update = false): ?array;
 
-    public function delete($resource, $id);
+    public function delete(string $resource, string|int $id): bool;
 }

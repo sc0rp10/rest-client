@@ -1,12 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
+namespace Sc\Tests;
+
+use PHPUnit\Framework\TestCase;
 use Sc\RestClient\ResponseParser\JsonResponseParser;
-use Sc\RestClient\Tests\Mock\TestClient;
+use Sc\Tests\Mock\TestClient;
+use Sc\Tests\Mock\TestHttpClient;
 
-require_once __DIR__.'/Mock/TestClient.php';
-require_once __DIR__.'/Mock/TestHttpClient.php';
-
-abstract class BaseTest extends \PHPUnit_Framework_TestCase
+abstract class BaseTest extends TestCase
 {
     const ENDPOINT = 'http://api.foo.bar/';
     const RESOURCE = 'zombies';
@@ -15,13 +16,11 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         'age' => 31,
     ];
 
-    /** @var TestClient */
-    protected $rest_client;
+    protected TestClient $rest_client;
 
-    /** @var TestHttpClient */
-    protected $http_client;
+    protected TestHttpClient $http_client;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->http_client = new TestHttpClient();
         $this->rest_client = new TestClient(self::ENDPOINT, new JsonResponseParser());
