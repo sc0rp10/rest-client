@@ -20,5 +20,5 @@ interface AuthenticationProviderInterface
      *
      * @return RequestInterface new Request instanse
      */
-    public function addAuthentificationInfo(RequestInterface $request);
+    public function addAuthentificationInfo(RequestInterface $request): RequestInterface;
 }

@@ -25,8 +25,8 @@ class XmlResponseParser implements ResponseParserInterface
             throw new ParsingFailedException();
         }
 
-        $json = json_encode($xml);
+        $json = json_encode($xml, JSON_THROW_ON_ERROR);
 
-        return json_decode($json, true);
+        return json_decode($json, true, 512, JSON_THROW_ON_ERROR);
     }
 }

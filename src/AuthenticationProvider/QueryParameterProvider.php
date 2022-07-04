@@ -13,30 +13,15 @@ namespace Sc\RestClient\AuthenticationProvider;
 
 use Psr\Http\Message\RequestInterface;
 
-/**
- * Class QueryParameterProvider.
- */
 class QueryParameterProvider implements AuthenticationProviderInterface
 {
-    protected $param_name;
-    protected $value;
-
-    /**
-     * @param $param_name
-     * @param $value
-     */
-    public function __construct($param_name, $value)
-    {
-        $this->param_name = $param_name;
-        $this->value = $value;
+    public function __construct(
+        private readonly string $param_name,
+        private readonly string $value,
+    ) {
     }
 
-    /**
-     * @param RequestInterface $request
-     *
-     * @return RequestInterface
-     */
-    public function addAuthentificationInfo(RequestInterface $request)
+    public function addAuthentificationInfo(RequestInterface $request): RequestInterface
     {
         $uri = $request->getUri();
         $qs = $uri->getQuery();

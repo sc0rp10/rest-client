@@ -11,7 +11,7 @@
 
 namespace Sc\RestClient\Client;
 
-use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\ClientInterface as HttpClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
@@ -25,20 +25,20 @@ use Sc\RestClient\ResponseParser\ResponseParserInterface;
 
 class Client implements ClientInterface
 {
-    public const METHOD_GET = 'GET';
-    public const METHOD_POST = 'POST';
-    public const METHOD_PUT = 'PUT';
-    public const METHOD_PATCH = 'PATCH';
-    public const METHOD_DELETE = 'DELETE';
+    public final const METHOD_GET = 'GET';
+    public final const METHOD_POST = 'POST';
+    public final const METHOD_PUT = 'PUT';
+    public final const METHOD_PATCH = 'PATCH';
+    public final const METHOD_DELETE = 'DELETE';
 
-    protected ?RequestSignerInterface $request_signer = null;
-    protected ?AuthenticationProviderInterface $auth_provider = null;
+    private ?RequestSignerInterface $request_signer = null;
+    private ?AuthenticationProviderInterface $auth_provider = null;
 
     public function __construct(
-        protected string $endpoint,
-        protected ResponseParserInterface $responseParser
+        private readonly string $endpoint,
+        private readonly ResponseParserInterface $responseParser,
+        private readonly HttpClient $httpClient,
     ) {
-        $this->endpoint = rtrim($endpoint, '/').'/';
     }
 
     public function useRequestSigner(RequestSignerInterface $signer): self
@@ -116,7 +116,7 @@ class Client implements ClientInterface
         return ($response->getStatusCode() === 204);
     }
 
-    protected function handleLocation(string $location): array
+    private function handleLocation(string $location): array
     {
         $uri = new Uri($location);
         $path = $uri->getPath();
@@ -126,34 +126,28 @@ class Client implements ClientInterface
         return $this->responseParser->parseResponse($response);
     }
 
-    protected function getHttpClient(): HttpClient
-    {
-        return new HttpClient([
-            'base_uri' => $this->endpoint,
-        ]);
-    }
-
-    protected function getRequest(string $method, string $uri, array $data = []): Request
+    private function getRequest(string $method, string $uri, array $data = []): Request
     {
         $headers = [
             'Content-Type' => 'application/x-www-form-urlencoded',
         ];
 
-        return new Request($method, $uri, $headers, http_build_query($data));
+        $endpoint = rtrim($this->endpoint, '/');
+        $uri = ltrim($uri, '/');
+
+        return new Request($method, sprintf('%s/%s', $endpoint, $uri), $headers, http_build_query($data));
     }
 
-    protected static function createNotFoundException(string $resource, string $identificator, ClientException $prev): ResourceNotFoundException
+    private static function createNotFoundException(string $resource, string $identificator, ClientException $prev): ResourceNotFoundException
     {
         return new ResourceNotFoundException(sprintf('Resource [%s/%s] not found', $resource, $identificator), 404, $prev);
     }
 
-    protected function makeRequest(string $path, string $method, array $data = [], array $parameters = []): ResponseInterface
+    private function makeRequest(string $path, string $method, array $data = [], array $parameters = []): ResponseInterface
     {
         if ($parameters) {
             $path .= '?'.http_build_query($parameters);
         }
-
-        $http_client = $this->getHttpClient();
 
         $request = $this->getRequest($method, $path, $data);
 
@@ -166,7 +160,7 @@ class Client implements ClientInterface
         }
 
         try {
-            return $http_client->send($request);
+            return $this->httpClient->send($request);
         } catch (ServerException $e) {
             throw new RequestFailedException(sprintf('Request %s %s failed', $method, $path), $e->getCode(), $e);
         }

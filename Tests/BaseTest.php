@@ -9,9 +9,9 @@ use Sc\Tests\Mock\TestHttpClient;
 
 abstract class BaseTest extends TestCase
 {
-    const ENDPOINT = 'http://api.foo.bar/';
-    const RESOURCE = 'zombies';
-    const STUB = [
+    public const ENDPOINT = 'http://api.foo.bar/';
+    public const RESOURCE = 'zombies';
+    public const STUB = [
         'name' => 'Shaun',
         'age' => 31,
     ];
@@ -23,7 +23,6 @@ abstract class BaseTest extends TestCase
     protected function setUp(): void
     {
         $this->http_client = new TestHttpClient();
-        $this->rest_client = new TestClient(self::ENDPOINT, new JsonResponseParser());
-        $this->rest_client->setHttpClient($this->http_client);
+        $this->rest_client = new TestClient(self::ENDPOINT, new JsonResponseParser(), $this->http_client);
     }
 }
