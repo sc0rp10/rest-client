@@ -132,10 +132,7 @@ class Client implements ClientInterface
             'Content-Type' => 'application/x-www-form-urlencoded',
         ];
 
-        $endpoint = rtrim($this->endpoint, '/');
-        $uri = ltrim($uri, '/');
-
-        return new Request($method, sprintf('%s/%s', $endpoint, $uri), $headers, http_build_query($data));
+        return new Request($method, $uri, $headers, http_build_query($data));
     }
 
     private static function createNotFoundException(string $resource, string $identificator, ClientException $prev): ResourceNotFoundException
@@ -160,7 +157,9 @@ class Client implements ClientInterface
         }
 
         try {
-            return $this->httpClient->send($request);
+            return $this->httpClient->send($request, [
+                'base_uri' => rtrim($this->endpoint, '/').'/',
+            ]);
         } catch (ServerException $e) {
             throw new RequestFailedException(sprintf('Request %s %s failed', $method, $path), $e->getCode(), $e);
         }
