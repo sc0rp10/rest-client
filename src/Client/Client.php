@@ -116,6 +116,13 @@ class Client implements ClientInterface
         return ($response->getStatusCode() === 204);
     }
 
+    public function customAction(string $method, string $path, array $data = [], array $parameters = []): array
+    {
+        $response = $this->makeRequest($path, $method, $data, $parameters);
+
+        return $this->responseParser->parseResponse($response);
+    }
+
     private function handleLocation(string $location): array
     {
         $uri = new Uri($location);

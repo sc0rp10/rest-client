@@ -29,4 +29,6 @@ interface ClientInterface
     public function update(string $resource, string|int $id, array $data, bool $partial_update = false): ?array;
 
     public function delete(string $resource, string|int $id): bool;
+
+    public function customAction(string $method, string $path, array $data = [], array $parameters = []): array;
 }
